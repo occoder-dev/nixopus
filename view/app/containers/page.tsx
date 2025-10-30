@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { RefreshCw, Trash2, Loader2, Scissors, Grid, List } from 'lucide-react';
+import { RefreshCw, Trash2, Loader2, Scissors, Grid, List, Puzzle, Container } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ContainersLoading from './components/skeleton';
 import { DeleteDialog } from '@/components/ui/delete-dialog';
@@ -17,6 +17,7 @@ import PaginationWrapper from '@/components/ui/pagination';
 import { SelectWrapper, SelectOption } from '@/components/ui/select-wrapper';
 import { SearchBar } from '@/components/ui/search-bar';
 import { ContainerCard } from './components/card';
+import { Banner } from '@/components/layout/page-banner';
 
 export default function ContainersPage() {
   const [viewMode, setViewMode] = React.useState<'table' | 'card'>(() => {
@@ -77,42 +78,16 @@ export default function ContainersPage() {
   return (
     <ResourceGuard resource="container" action="read" loadingFallback={<ContainersLoading />}>
       <PageLayout maxWidth="6xl" padding="md" spacing="lg" className="relative z-10">
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-          <span>
-            <TypographyH1 className="text-2xl font-bold">{t('containers.title')}</TypographyH1>
-          </span>
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              onClick={handleRefresh}
-              variant="outline"
-              size="sm"
-              disabled={isRefreshing || isFetching}
-            >
-              {isRefreshing || isFetching ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="mr-2 h-4 w-4" />
-              )}
-              {t('containers.refresh')}
-            </Button>
-            <AnyPermissionGuard
-              permissions={['container:delete']}
-              loadingFallback={<Skeleton className="h-8 w-20" />}
-            >
-              <Button variant="outline" size="sm" onClick={() => setShowPruneImagesConfirm(true)}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                {t('containers.prune_images')}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowPruneBuildCacheConfirm(true)}
-              >
-                <Scissors className="mr-2 h-4 w-4" />
-                {t('containers.prune_build_cache')}
-              </Button>
-            </AnyPermissionGuard>
-          </div>
+
+        <div className="w-full mb-6">
+          <Banner
+            isLoading={false}
+            badgeText="beta"
+            heading={t('containers.title')}
+            subheading={t('containers.description')}
+            description="Easily extend functionality with community-built add-ons."
+            image={<Container className='w-32 h-32 text-primary' />}
+          />
         </div>
 
         <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
@@ -124,8 +99,41 @@ export default function ContainersPage() {
             />
           </div>
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                size="sm"
+                disabled={isRefreshing || isFetching}
+              >
+                {isRefreshing || isFetching ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="mr-2 h-4 w-4" />
+                )}
+                {t('containers.refresh')}
+              </Button>
+              <AnyPermissionGuard
+                permissions={['container:delete']}
+                loadingFallback={<Skeleton className="h-8 w-20" />}
+              >
+                <Button variant="outline" size="sm" onClick={() => setShowPruneImagesConfirm(true)}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t('containers.prune_images')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPruneBuildCacheConfirm(true)}
+                >
+                  <Scissors className="mr-2 h-4 w-4" />
+                  {t('containers.prune_build_cache')}
+                </Button>
+              </AnyPermissionGuard>
+            </div>
             <SelectWrapper
               value={String(pageSize)}
+              size="sm"
               onValueChange={(v) => {
                 const num = parseInt(v, 10);
                 setPageSize(num);
@@ -140,10 +148,10 @@ export default function ContainersPage() {
               placeholder="Page size"
               className="w-[110px]"
             />
-            <div className="hidden sm:flex items-center gap-2 ml-2">
+            <div className="hidden sm:flex items-center gap-2">
               <Button
                 variant="outline"
-                size="icon"
+                size="sm"
                 onClick={() => {
                   const next = viewMode === 'table' ? 'card' : 'table';
                   setViewMode(next);
